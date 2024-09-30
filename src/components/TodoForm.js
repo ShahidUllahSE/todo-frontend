@@ -1,29 +1,42 @@
-// src/TodoForm.js
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import axios from 'axios';
 import { addTodo } from '../redux/actions';
 
 const TodoForm = () => {
-  const [todo, setTodo] = useState('');
+  const [text, setText] = useState('');
   const dispatch = useDispatch();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!todo) return;
-    dispatch(addTodo({ id: Date.now(), text: todo, completed: false }));
-    setTodo('');
+    if (text.trim()) {
+      try {
+        // Send the new todo to the backend
+        const response = await axios.post('http://localhost:5000/api/todos', {
+          text: text.trim(),
+        });
+
+        // Dispatch the newly created todo to Redux store
+        dispatch(addTodo(response.data));
+
+        // Clear the input after adding
+        setText('');
+      } catch (error) {
+        console.error('Error adding todo:', error);
+      }
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="mb-4">
       <input
         type="text"
-        value={todo}
-        onChange={(e) => setTodo(e.target.value)}
-        placeholder="Add a new todo"
-        className="border p-2 rounded w-full"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        className="border rounded p-2 w-full mb-2"
+        placeholder="Enter a new todo"
       />
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded mt-2">
+      <button type="submit" className="bg-blue-500 text-white p-2 rounded">
         Add Todo
       </button>
     </form>
