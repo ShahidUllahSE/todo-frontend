@@ -9,7 +9,7 @@ const todosReducer = (state = initialState, action) => {
     case ADD_TODO:
       return [...state, action.payload];
     case REMOVE_TODO:
-      return state.filter((todo) => todo._id !== action.payload); // Ensure it uses _id if that's what the backend uses
+      return state.filter((todo) => todo._id !== action.payload);
     case TOGGLE_TODO:
       return state.map((todo) =>
         todo._id === action.payload ? { ...todo, completed: !todo.completed } : todo
